@@ -1,8 +1,10 @@
 use std::env::current_exe;
+use entities::bird::Bird;
 use macroquad::{camera::{set_camera, set_default_camera, Camera2D}, color, math::{vec2, Rect}, texture::{draw_texture, draw_texture_ex, render_target, DrawTextureParams, FilterMode}, window::{clear_background, next_frame, screen_height, screen_width, Conf}};
 use utils::paths::{self, AssetType};
 
 mod utils;
+mod entities;
 
 pub const GAME_WIDTH: f32 = 288.0;
 pub const GAME_HEIGHT: f32 = 512.0;
@@ -28,6 +30,7 @@ async fn main() {
 
     // Get backfround now as we won't be touching it
     let background = paths::get_asset("background-day.png", AssetType::Sprite).await.unwrap();
+    let mut bird = Bird::new().await;
 
     println!("{}", current_exe().unwrap().display());
 
@@ -38,6 +41,8 @@ async fn main() {
             screen_height() / GAME_HEIGHT
         );
 
+        bird.update();
+
         // Draw
         clear_background(color::BLACK);
 
@@ -46,6 +51,8 @@ async fn main() {
 
         clear_background(color::WHITE);
         draw_texture(&background, 0., 0., color::WHITE);
+
+        bird.draw();
 
         // Drawing on the whole screen
         set_default_camera();
