@@ -1,7 +1,6 @@
-use std::env::current_exe;
 use entities::bird::Bird;
 use macroquad::{camera::{set_camera, set_default_camera, Camera2D}, color, math::{vec2, Rect}, texture::{draw_texture, draw_texture_ex, render_target, DrawTextureParams, FilterMode}, window::{clear_background, next_frame, screen_height, screen_width, Conf}};
-use utils::paths::{self, AssetType};
+use utils::paths;
 
 mod utils;
 mod entities;
@@ -29,10 +28,9 @@ async fn main() {
     renderer_camera.render_target = Some(renderer.clone());
 
     // Get backfround now as we won't be touching it
-    let background = paths::get_asset("background-day.png", AssetType::Sprite).await.unwrap();
+    let background = paths::get_asset("background-day.png").await.unwrap();
     let mut bird = Bird::new().await;
-
-    println!("{}", current_exe().unwrap().display());
+    bird.init();
 
     loop {
         // Update
