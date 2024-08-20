@@ -29,8 +29,6 @@ pub struct Bird {
     vel: Vec2,
 
     flap_sound: Sound,
-
-    paused: bool
 }
 
 impl Bird {
@@ -55,8 +53,6 @@ impl Bird {
             vel: Vec2::ZERO,
 
             flap_sound: paths::get_audio("wing.wav").await.unwrap(),
-
-            paused: true
         }
     }
 
@@ -86,15 +82,11 @@ impl Entity for Bird {
         self.pos.x = 70.0;
     }
 
-    fn update(&mut self) {
+    fn update(&mut self, paused: bool) {
         self.cycle_animation();
 
-        if self.paused {
-            if input::is_mouse_button_pressed(MouseButton::Left) {
-                self.paused = false;
-            } else {
-                return;
-            }
+        if !paused {
+            return;
         }
 
         // Apply gravity

@@ -38,15 +38,15 @@ impl State for Game {
     }
 
     fn update(&mut self) {
+        if !self.started && input::is_mouse_button_pressed(MouseButton::Left) {
+            self.started = true;
+        }
+
         for e in &mut self.entities {
-            e.update();
+            e.update(self.started);
         }
 
         if !self.started {
-            if input::is_mouse_button_pressed(MouseButton::Left) {
-                self.started = true;
-            }
-
             if self.alpha <= 1.0 { self.alpha += 0.1; }
             return;
         }

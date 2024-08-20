@@ -1,4 +1,4 @@
-use macroquad::{color, input::{self, MouseButton}, math::Vec2, texture::{draw_texture, Texture2D}};
+use macroquad::{color, math::Vec2, texture::{draw_texture, Texture2D}};
 
 use crate::{utils::paths, GAME_HEIGHT, GAME_WIDTH};
 
@@ -9,8 +9,6 @@ pub struct Ground {
 
     pos: Vec2,
     second_pos: Vec2,
-
-    paused: bool
 }
 
 impl Ground {
@@ -20,8 +18,6 @@ impl Ground {
 
             pos: Vec2::ZERO,
             second_pos: Vec2::ZERO,
-
-            paused: true
         }
     }
 }
@@ -34,13 +30,9 @@ impl Entity for Ground {
         self.second_pos.x = self.sprite.width();
     }
 
-    fn update(&mut self) {
-        if self.paused {
-            if input::is_mouse_button_pressed(MouseButton::Left) {
-                self.paused = false;
-            } else {
-                return;
-            }
+    fn update(&mut self, paused: bool) {
+        if !paused {
+            return;
         }
         
         self.pos.x -= 2.0;
