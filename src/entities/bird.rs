@@ -1,6 +1,8 @@
 use macroquad::{audio::{self, Sound}, color, input::{self, MouseButton}, math::Vec2, texture::{draw_texture_ex, DrawTextureParams, Texture2D}, time};
 use crate::{utils::{math::{deg_to_rad, move_towards}, paths}, GAME_HEIGHT};
 
+use super::entity::Entity;
+
 const GRAVITY: f32 = 0.50;
 const TERMINAL_VELOCITY: f32 = 10.50;
 const JUMP_VELOCITY: f32 = -6.0;
@@ -70,15 +72,17 @@ impl Bird {
             }
         }
     }
+}
 
-    pub fn init(&mut self) {
+impl Entity for Bird {
+    fn init(&mut self) {
         let current_texture: &Texture2D = &self.sprites[self.active_sprite_idx];
         
         self.pos.y = (GAME_HEIGHT / 2.0) - current_texture.width();
         self.pos.x = 70.0;
     }
 
-    pub fn update(&mut self) {
+    fn update(&mut self) {
         self.cycle_animation();
 
         // Apply gravity
@@ -108,7 +112,7 @@ impl Bird {
         self.pos += self.vel;
     }
 
-    pub fn draw(&self) {
+    fn draw(&self) {
         draw_texture_ex(
             &self.sprites[self.active_sprite_idx],
             self.pos.x,

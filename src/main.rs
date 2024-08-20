@@ -1,9 +1,10 @@
-use entities::{bird::Bird, ground::Ground};
 use macroquad::{camera::{set_camera, set_default_camera, Camera2D}, color, math::{vec2, Rect}, texture::{draw_texture, draw_texture_ex, render_target, DrawTextureParams, FilterMode}, window::{clear_background, next_frame, screen_height, screen_width, Conf}};
+use states::{game::Game, state::State};
 use utils::paths;
 
 mod utils;
 mod entities;
+mod states;
 
 pub const GAME_WIDTH: f32 = 288.0;
 pub const GAME_HEIGHT: f32 = 512.0;
@@ -30,11 +31,9 @@ async fn main() {
     // Get backfround now as we won't be touching it
     let background = paths::get_asset("background-day.png").await.unwrap();
 
-    let mut bird = Bird::new().await;
-    bird.init();
-
-    let mut ground = Ground::new().await;
-    ground.init();
+    let mut main_state: Box<dyn State>;
+    main_state = Box::new(Game::new().await);
+    main_state.init();
 
     loop {
         // Update
@@ -43,8 +42,7 @@ async fn main() {
             screen_height() / GAME_HEIGHT
         );
 
-        bird.update();
-        ground.update();
+        main_state.update();
 
         // Draw
         clear_background(color::BLACK);
@@ -55,8 +53,7 @@ async fn main() {
         clear_background(color::WHITE);
         draw_texture(&background, 0., 0., color::WHITE);
 
-        bird.draw();
-        ground.draw();
+        main_state.draw();
 
         // Drawing on the whole screen
         set_default_camera();

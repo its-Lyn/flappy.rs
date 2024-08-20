@@ -2,6 +2,8 @@ use macroquad::{color, math::Vec2, texture::{draw_texture, Texture2D}};
 
 use crate::{utils::paths, GAME_HEIGHT, GAME_WIDTH};
 
+use super::entity::Entity;
+
 pub struct Ground {
     sprite: Texture2D,
 
@@ -18,16 +20,17 @@ impl Ground {
             second_pos: Vec2::ZERO
         }
     }
+}
 
-    pub fn init(&mut self) {
+impl Entity for Ground {
+    fn init(&mut self) {
         self.pos.y = GAME_HEIGHT - self.sprite.height();
 
         self.second_pos.y = GAME_HEIGHT - self.sprite.height();
         self.second_pos.x = self.sprite.width();
     }
 
-
-    pub fn update(&mut self) {
+    fn update(&mut self) {
         self.pos.x -= 2.0;
         if self.pos.x < 0. - self.sprite.width() {
             self.pos.x = GAME_WIDTH;
@@ -39,7 +42,7 @@ impl Ground {
         }
     }
 
-    pub fn draw(&self) {
+    fn draw(&self) {
         // Draw the first ground
         draw_texture(&self.sprite, self.pos.x, self.pos.y, color::WHITE);
 
