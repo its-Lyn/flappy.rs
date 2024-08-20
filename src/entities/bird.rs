@@ -5,6 +5,12 @@ const GRAVITY: f32 = 0.50;
 const TERMINAL_VELOCITY: f32 = 10.50;
 const JUMP_VELOCITY: f32 = -6.0;
 
+const MAX_DOWNWARD_ANGLE: f32 = 40.0;
+const MAX_UPWARD_ANGLE: f32 = -20.0;
+
+const FLAPPING_SPEED: f32 = 0.05;
+const FALLING_SPEED: f32 = 0.15;
+
 pub struct Bird {
     animation_timer: f32,
     animation_speed: f32,
@@ -36,7 +42,7 @@ impl Bird {
 
             rotation: 0.0,
             rotation_speed: 8.0,
-            rotation_angle: 40.0,
+            rotation_angle: MAX_UPWARD_ANGLE,
 
             reverse: false,
             active_sprite_idx: 0,
@@ -84,18 +90,18 @@ impl Bird {
         if input::is_mouse_button_pressed(MouseButton::Left) {
             audio::play_sound_once(&self.flap_sound);
 
-            self.rotation_angle = -20.0;
+            self.rotation_angle = MAX_UPWARD_ANGLE;
 
             self.vel.y = JUMP_VELOCITY;
-            self.animation_speed = 0.05;
+            self.animation_speed = FLAPPING_SPEED;
         }
 
         // Speed up the cycle animation
         // When the velocity reaches 1.5
         // This surprisingly works well for some reason
         if self.vel.y > 1.5 {
-            self.rotation_angle = 40.0;
-            self.animation_speed = 0.15;
+            self.rotation_angle = MAX_DOWNWARD_ANGLE;
+            self.animation_speed = FALLING_SPEED;
         }
 
         self.pos += self.vel;
