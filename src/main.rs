@@ -1,4 +1,4 @@
-use entities::bird::Bird;
+use entities::{bird::Bird, ground::Ground};
 use macroquad::{camera::{set_camera, set_default_camera, Camera2D}, color, math::{vec2, Rect}, texture::{draw_texture, draw_texture_ex, render_target, DrawTextureParams, FilterMode}, window::{clear_background, next_frame, screen_height, screen_width, Conf}};
 use utils::paths;
 
@@ -29,8 +29,12 @@ async fn main() {
 
     // Get backfround now as we won't be touching it
     let background = paths::get_asset("background-day.png").await.unwrap();
+
     let mut bird = Bird::new().await;
     bird.init();
+
+    let mut ground = Ground::new().await;
+    ground.init();
 
     loop {
         // Update
@@ -40,6 +44,7 @@ async fn main() {
         );
 
         bird.update();
+        ground.update();
 
         // Draw
         clear_background(color::BLACK);
@@ -51,6 +56,7 @@ async fn main() {
         draw_texture(&background, 0., 0., color::WHITE);
 
         bird.draw();
+        ground.draw();
 
         // Drawing on the whole screen
         set_default_camera();

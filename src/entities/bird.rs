@@ -84,6 +84,7 @@ impl Bird {
         // Apply gravity
         self.vel.y = move_towards(self.vel.y, TERMINAL_VELOCITY, GRAVITY);
 
+        // Rotate the bird every frame
         self.rotation = move_towards(self.rotation, self.rotation_angle, self.rotation_speed);
 
         // Flap
