@@ -47,18 +47,12 @@ impl State for Game {
                 self.started = true;
             }
 
-            if self.alpha <= 1.0 {
-                self.alpha += 0.1;
-            }
-
+            if self.alpha <= 1.0 { self.alpha += 0.1; }
             return;
         }
 
-        if self.alpha >= 0.0 {
-            self.alpha -= 0.1;
-        }
-
-        if self.alpha >= 1.0 { self.done = true };
+        if self.alpha >= 0.0 { self.alpha -= 0.1; }
+        if self.alpha >= 1.0 { self.done = true; }
     }
 
     fn draw(&self) {
