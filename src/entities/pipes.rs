@@ -1,4 +1,4 @@
-use macroquad::{color, math::Vec2, texture::{draw_texture, draw_texture_ex, DrawTextureParams, Texture2D}};
+use macroquad::{color, math::{Rect, Vec2}, shapes::draw_rectangle_lines, texture::{draw_texture, draw_texture_ex, DrawTextureParams, Texture2D}};
 use rand::{rngs::ThreadRng, Rng};
 use crate::{utils::paths, GAME_HEIGHT, GAME_WIDTH};
 use super::entity::Entity;
@@ -15,7 +15,10 @@ pub struct Pipes {
     sprite: Texture2D,
 
     first_pos: Vec2,
-    second_pos: Vec2
+    second_pos: Vec2,
+
+    first_collider: Rect,
+    second_collider: Rect
 }
 
 impl Pipes {
@@ -24,7 +27,10 @@ impl Pipes {
             sprite: paths::get_asset("pipe-green.png").await.unwrap(),
 
             first_pos: Vec2::ZERO,
-            second_pos: Vec2::ZERO
+            second_pos: Vec2::ZERO,
+
+            first_collider: Rect::new(0.0, 0.0, 0.0, 0.0),
+            second_collider: Rect::new(0.0, 0.0, 0.0, 0.0)
         }
     }
 
@@ -45,6 +51,20 @@ impl Pipes {
     pub fn width(&self) -> f32 {
         self.sprite.width()
     }
+
+    fn update_colliders(&mut self) {
+        self.first_collider.x = self.first_pos.x;
+        self.first_collider.y = self.first_pos.y;
+
+        self.first_collider.w = self.sprite.width();
+        self.first_collider.h = self.sprite.height();
+
+        self.second_collider.x = self.second_pos.x;
+        self.second_collider.y = self.second_pos.y;
+
+        self.second_collider.w = self.sprite.width();
+        self.second_collider.h = self.sprite.height();
+    }
 }
 
 impl Entity for Pipes {
@@ -55,6 +75,8 @@ impl Entity for Pipes {
 
     fn update(&mut self, paused: bool) {
         if paused { return; }
+
+        self.update_colliders();
 
         self.first_pos.x -= SPEED;
         self.second_pos.x -= SPEED;
@@ -73,5 +95,8 @@ impl Entity for Pipes {
                 ..Default::default()
             }
         );
+
+        draw_rectangle_lines(self.first_collider.x, self.first_collider.y, self.first_collider.w, self.first_collider.h, 5.0, color::BLACK);
+        draw_rectangle_lines(self.second_collider.x, self.second_collider.y, self.second_collider.w, self.second_collider.h, 5.0, color::BLACK);
     }
 }
