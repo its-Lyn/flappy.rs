@@ -1,4 +1,4 @@
-use macroquad::{audio::{self, Sound}, color::{self, Color, WHITE}, input::{self, MouseButton}, texture::{draw_texture, Texture2D}, time};
+use macroquad::{audio::{self, Sound}, color::{Color, WHITE}, input::{self, MouseButton}, texture::{draw_texture, Texture2D}, time};
 use rand::rngs::ThreadRng;
 use crate::{entities::{bird::Bird, entity::Entity, ground::Ground, pipes::Pipes}, utils::{collisions, math::DigitsIter, paths}, GAME_WIDTH};
 use super::state::State;
@@ -10,6 +10,7 @@ pub struct Game {
     ground: Ground,
 
     score: i32,
+    score_alpha: f32,
     score_changed: bool,
     score_textured: Vec<Texture2D>,
     score_assets: Vec<Texture2D>,
@@ -35,6 +36,7 @@ impl Game {
             ground: Ground::new().await,
 
             score: 0,
+            score_alpha: 0.0,
             score_changed: false,
             score_textured: Vec::new(),
             score_assets: vec![
@@ -117,6 +119,10 @@ impl State for Game {
         }
 
         if self.started {
+            if self.score_alpha <= 1.0 && self.score > 0 {
+                self.score_alpha += 0.2;
+            }
+
             self.pipe_timer += time::get_frame_time();
             if self.pipe_timer >= PIPE_SPAWN {
                 self.pipe_timer = 0.0;
@@ -146,16 +152,20 @@ impl State for Game {
         self.bird.draw();
         self.ground.draw();
 
+        if !self.done {
+            draw_texture(&self.start_texture, 50., 40., Color { a: self.alpha, ..WHITE });
+        }
+
         // Draw score
+        if self.score == 0 {
+            return;
+        }
+
         let mut base_position = (GAME_WIDTH / 2.0) + ((self.score_assets[1].width() / 2.0) * self.score_textured.len() as f32);
         for score_texture in &self.score_textured {
             base_position -= score_texture.width();
 
-            draw_texture(score_texture, base_position, 20.0, color::WHITE);
-        }
-
-        if !self.done {
-            draw_texture(&self.start_texture, 50., 40., Color { a: self.alpha, ..WHITE });
+            draw_texture(score_texture, base_position, 10.0, Color { a: self.score_alpha, ..WHITE });
         }
     }
 }
