@@ -10,6 +10,8 @@ const PIPE_GAP: f32 = 90.0;
 const PIPE_MIN_OFFSET: f32 = 180.0;
 const PIPE_MAX_OFFSET: f32 = 120.0;
 
+const SCORE_SIZE: f32 = 20.0;
+
 #[derive(Clone)]
 pub struct Pipes {
     sprite: Texture2D,
@@ -18,7 +20,11 @@ pub struct Pipes {
     second_pos: Vec2,
 
     first_collider: Rect,
-    second_collider: Rect
+    second_collider: Rect,
+
+    score_collider: Rect,
+
+    pub touched: bool,
 }
 
 impl Pipes {
@@ -30,7 +36,11 @@ impl Pipes {
             second_pos: Vec2::ZERO,
 
             first_collider: Rect::new(0.0, 0.0, 0.0, 0.0),
-            second_collider: Rect::new(0.0, 0.0, 0.0, 0.0)
+            second_collider: Rect::new(0.0, 0.0, 0.0, 0.0),
+
+            score_collider: Rect::new(0.0, 0.0, 0.0, 0.0),
+
+            touched: false,
         }
     }
 
@@ -53,18 +63,36 @@ impl Pipes {
     }
 
     fn update_colliders(&mut self) {
+        // Bottom pipe
         self.first_collider.x = self.first_pos.x;
         self.first_collider.y = self.first_pos.y;
 
         self.first_collider.w = self.sprite.width();
         self.first_collider.h = self.sprite.height();
 
+        // Top pipe
         self.second_collider.x = self.second_pos.x;
         self.second_collider.y = self.second_pos.y;
 
         self.second_collider.w = self.sprite.width();
         self.second_collider.h = self.sprite.height();
+
+        // Score
+        self.score_collider.x = self.first_pos.x + (self.sprite.width() / 2.0) - (SCORE_SIZE / 2.0);
+        self.score_collider.y = self.first_pos.y - PIPE_GAP;
+
+        self.score_collider.w = SCORE_SIZE;
+        self.score_collider.h = PIPE_GAP;
     }
+
+    pub fn get_colliders(&self) -> (Rect, Rect) {
+        (self.first_collider, self.second_collider)
+    }
+
+    pub fn get_score_collider(&self) -> Rect {
+        self.score_collider
+    }
+
 }
 
 impl Entity for Pipes {
@@ -96,7 +124,8 @@ impl Entity for Pipes {
             }
         );
 
-        draw_rectangle_lines(self.first_collider.x, self.first_collider.y, self.first_collider.w, self.first_collider.h, 5.0, color::BLACK);
-        draw_rectangle_lines(self.second_collider.x, self.second_collider.y, self.second_collider.w, self.second_collider.h, 5.0, color::BLACK);
+        draw_rectangle_lines(self.first_collider.x, self.first_collider.y, self.first_collider.w, self.first_collider.h, 5.0, color::RED);
+        draw_rectangle_lines(self.second_collider.x, self.second_collider.y, self.second_collider.w, self.second_collider.h, 5.0, color::RED);
+        draw_rectangle_lines(self.score_collider.x, self.score_collider.y, self.score_collider.w, self.score_collider.h, 5.0, color::WHITE);
     }
 }

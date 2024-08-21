@@ -1,4 +1,4 @@
-use macroquad::{color, math::Vec2, texture::{draw_texture, Texture2D}};
+use macroquad::{color, math::{Rect, Vec2}, shapes::{draw_rectangle, draw_rectangle_lines}, texture::{draw_texture, Texture2D}};
 
 use crate::{utils::paths, GAME_HEIGHT, GAME_WIDTH};
 
@@ -11,6 +11,8 @@ pub struct Ground {
 
     pos: Vec2,
     second_pos: Vec2,
+
+    collider: Rect
 }
 
 impl Ground {
@@ -20,7 +22,17 @@ impl Ground {
 
             pos: Vec2::ZERO,
             second_pos: Vec2::ZERO,
+
+            collider: Rect::new(0.0, 0.0, 0.0, 0.0)
         }
+    }
+
+    fn update_collider(&mut self) {
+        self.collider.x = 0.0;
+        self.collider.y = GAME_HEIGHT - self.sprite.height();
+
+        self.collider.w = GAME_WIDTH;
+        self.collider.h = self.sprite.height();
     }
 }
 
@@ -34,6 +46,8 @@ impl Entity for Ground {
 
     fn update(&mut self, paused: bool) {
         if paused { return; }
+
+        self.update_collider();
         
         self.pos.x -= SPEED;
         if self.pos.x < 0. - self.sprite.width() {
@@ -52,5 +66,7 @@ impl Entity for Ground {
 
         // Draw the second ground
         draw_texture(&self.sprite, self.second_pos.x, self.second_pos.y, color::WHITE);
+
+        draw_rectangle_lines(self.collider.x, self.collider.y, self.collider.w, self.collider.h, 5.0, color::RED);
     }
 }

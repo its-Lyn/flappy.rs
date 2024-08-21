@@ -85,6 +85,10 @@ impl Bird {
         self.collider.w = sprite.width();
         self.collider.h = sprite.height();
     }
+
+    pub fn get_collider(&self) -> Rect {
+        self.collider
+    }
 }
 
 impl Entity for Bird {
@@ -99,8 +103,6 @@ impl Entity for Bird {
         self.cycle_animation();
 
         if paused { return; }
-
-        self.update_collider();
 
         // Apply gravity
         self.vel.y = move_towards(self.vel.y, TERMINAL_VELOCITY, GRAVITY);
@@ -133,6 +135,7 @@ impl Entity for Bird {
         }
 
         self.pos += self.vel;
+        self.update_collider();
     }
 
     fn draw(&self) {
@@ -147,6 +150,6 @@ impl Entity for Bird {
             }
         );
         
-        draw_rectangle_lines(self.collider.x, self.collider.y, self.collider.w, self.collider.h, 5.0, color::BLACK);
+        draw_rectangle_lines(self.collider.x, self.collider.y, self.collider.w, self.collider.h, 5.0, color::RED);
     }
 }
