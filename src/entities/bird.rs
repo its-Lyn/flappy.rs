@@ -1,4 +1,4 @@
-use macroquad::{audio::{self, Sound}, color, input::{self, MouseButton}, math::{Rect, Vec2}, texture::{draw_texture_ex, DrawTextureParams, Texture2D}, time};
+use macroquad::{audio::{self, Sound}, color, input::{self, MouseButton}, math::{Rect, Vec2}, shapes::{draw_rectangle, draw_rectangle_ex, draw_rectangle_lines}, texture::{draw_texture_ex, DrawTextureParams, Texture2D}, time};
 use crate::{utils::{math::{deg_to_rad, move_towards}, paths}, GAME_HEIGHT};
 
 use super::entity::Entity;
@@ -146,5 +146,7 @@ impl Entity for Bird {
                 ..Default::default()
             }
         );
+        
+        draw_rectangle_lines(self.collider.x, self.collider.y, self.collider.w, self.collider.h, 5.0, color::BLACK);
     }
 }
