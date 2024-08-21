@@ -1,4 +1,4 @@
-use macroquad::{audio::{self, Sound}, color, input::{self, MouseButton}, math::Vec2, texture::{draw_texture_ex, DrawTextureParams, Texture2D}, time};
+use macroquad::{audio::{self, Sound}, color, input::{self, MouseButton}, math::{Rect, Vec2}, texture::{draw_texture_ex, DrawTextureParams, Texture2D}, time};
 use crate::{utils::{math::{deg_to_rad, move_towards}, paths}, GAME_HEIGHT};
 
 use super::entity::Entity;
@@ -29,6 +29,8 @@ pub struct Bird {
     vel: Vec2,
 
     flap_sound: Sound,
+
+    collider: Rect
 }
 
 impl Bird {
@@ -53,6 +55,8 @@ impl Bird {
             vel: Vec2::ZERO,
 
             flap_sound: paths::get_audio("wing.wav").await.unwrap(),
+
+            collider: Rect::new(0., 0., 0., 0.)
         }
     }
 
@@ -72,6 +76,15 @@ impl Bird {
             }
         }
     }
+
+    fn update_collider(&mut self) {
+        self.collider.x = self.pos.x;
+        self.collider.y = self.pos.y;
+
+        let sprite: &Texture2D = &self.sprites[self.active_sprite_idx];
+        self.collider.w = sprite.width();
+        self.collider.h = sprite.height();
+    }
 }
 
 impl Entity for Bird {
@@ -85,9 +98,9 @@ impl Entity for Bird {
     fn update(&mut self, paused: bool) {
         self.cycle_animation();
 
-        if !paused {
-            return;
-        }
+        if paused { return; }
+
+        self.update_collider();
 
         // Apply gravity
         self.vel.y = move_towards(self.vel.y, TERMINAL_VELOCITY, GRAVITY);

@@ -4,6 +4,8 @@ use crate::{utils::paths, GAME_HEIGHT, GAME_WIDTH};
 
 use super::entity::Entity;
 
+const SPEED: f32 = 2.0;
+
 pub struct Ground {
     sprite: Texture2D,
 
@@ -31,16 +33,14 @@ impl Entity for Ground {
     }
 
     fn update(&mut self, paused: bool) {
-        if !paused {
-            return;
-        }
+        if paused { return; }
         
-        self.pos.x -= 2.0;
+        self.pos.x -= SPEED;
         if self.pos.x < 0. - self.sprite.width() {
             self.pos.x = GAME_WIDTH;
         }
 
-        self.second_pos.x -= 2.0;
+        self.second_pos.x -= SPEED;
         if self.second_pos.x < 0. - self.sprite.width() {
             self.second_pos.x = GAME_WIDTH;
         }
