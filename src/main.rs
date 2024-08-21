@@ -6,6 +6,8 @@ mod utils;
 mod entities;
 mod states;
 
+pub const DEV_MODE: bool = false;
+
 pub const GAME_WIDTH: f32 = 288.0;
 pub const GAME_HEIGHT: f32 = 512.0;
 

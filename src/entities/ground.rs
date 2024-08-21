@@ -1,6 +1,6 @@
-use macroquad::{color, math::{Rect, Vec2}, shapes::{draw_rectangle, draw_rectangle_lines}, texture::{draw_texture, Texture2D}};
+use macroquad::{color, math::{Rect, Vec2}, shapes::draw_rectangle_lines, texture::{draw_texture, Texture2D}};
 
-use crate::{utils::paths, GAME_HEIGHT, GAME_WIDTH};
+use crate::{utils::paths, DEV_MODE, GAME_HEIGHT, GAME_WIDTH};
 
 use super::entity::Entity;
 
@@ -67,6 +67,8 @@ impl Entity for Ground {
         // Draw the second ground
         draw_texture(&self.sprite, self.second_pos.x, self.second_pos.y, color::WHITE);
 
-        draw_rectangle_lines(self.collider.x, self.collider.y, self.collider.w, self.collider.h, 5.0, color::RED);
+        if DEV_MODE {
+            draw_rectangle_lines(self.collider.x, self.collider.y, self.collider.w, self.collider.h, 5.0, color::RED);
+        }
     }
 }

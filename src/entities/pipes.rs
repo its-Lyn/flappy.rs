@@ -1,6 +1,6 @@
 use macroquad::{color, math::{Rect, Vec2}, shapes::draw_rectangle_lines, texture::{draw_texture, draw_texture_ex, DrawTextureParams, Texture2D}};
 use rand::{rngs::ThreadRng, Rng};
-use crate::{utils::paths, GAME_HEIGHT, GAME_WIDTH};
+use crate::{utils::paths, DEV_MODE, GAME_HEIGHT, GAME_WIDTH};
 use super::entity::Entity;
 
 const SPAWN_OFFSET: f32 = 20.0;
@@ -124,8 +124,10 @@ impl Entity for Pipes {
             }
         );
 
-        draw_rectangle_lines(self.first_collider.x, self.first_collider.y, self.first_collider.w, self.first_collider.h, 5.0, color::RED);
-        draw_rectangle_lines(self.second_collider.x, self.second_collider.y, self.second_collider.w, self.second_collider.h, 5.0, color::RED);
-        draw_rectangle_lines(self.score_collider.x, self.score_collider.y, self.score_collider.w, self.score_collider.h, 5.0, color::WHITE);
-    }
+        if DEV_MODE {
+            draw_rectangle_lines(self.first_collider.x, self.first_collider.y, self.first_collider.w, self.first_collider.h, 5.0, color::RED);
+            draw_rectangle_lines(self.second_collider.x, self.second_collider.y, self.second_collider.w, self.second_collider.h, 5.0, color::RED);
+            draw_rectangle_lines(self.score_collider.x, self.score_collider.y, self.score_collider.w, self.score_collider.h, 5.0, color::WHITE);
+        }
+   }
 }
