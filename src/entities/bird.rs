@@ -105,6 +105,12 @@ impl Entity for Bird {
             self.animation_speed = FLAPPING_SPEED;
         }
 
+        // Bonk
+        if self.pos.y <= -self.sprites[self.active_sprite_idx].height() * 2.0 {
+            self.pos.y = -self.sprites[self.active_sprite_idx].height() * 1.9;
+            self.vel.y = 0.0;
+        }
+
         // Speed up the cycle animation
         // When the velocity reaches 1.5
         // This surprisingly works well for some reason
