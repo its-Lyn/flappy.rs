@@ -30,7 +30,8 @@ pub struct Bird {
 
     flap_sound: Sound,
 
-    collider: Rect
+    collider: Rect,
+    pub hard_pause: bool
 }
 
 impl Bird {
@@ -56,7 +57,9 @@ impl Bird {
 
             flap_sound: paths::get_audio("wing.wav").await.unwrap(),
 
-            collider: Rect::new(0., 0., 0., 0.)
+            collider: Rect::new(0., 0., 0., 0.),
+
+            hard_pause: false
         }
     }
 
@@ -89,6 +92,21 @@ impl Bird {
     pub fn get_collider(&self) -> Rect {
         self.collider
     }
+
+    pub fn die(&mut self) {
+        self.vel.y = move_towards(self.vel.y, TERMINAL_VELOCITY, GRAVITY);
+        self.rotation = move_towards(self.rotation, self.rotation_angle, self.rotation_speed);
+
+        if self.vel.y > 1.5 {
+            self.rotation_angle = MAX_DOWNWARD_ANGLE;
+            self.animation_speed = FALLING_SPEED;
+        }
+
+        self.pos += self.vel;
+        self.update_collider();
+
+        self.hard_pause = true;
+    }
 }
 
 impl Entity for Bird {
@@ -100,6 +118,8 @@ impl Entity for Bird {
     }
 
     fn update(&mut self, paused: bool) {
+        if self.hard_pause { return; }
+
         self.cycle_animation();
 
         if paused { return; }

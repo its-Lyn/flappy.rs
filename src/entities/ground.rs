@@ -34,6 +34,10 @@ impl Ground {
         self.collider.w = GAME_WIDTH;
         self.collider.h = self.sprite.height();
     }
+
+    pub fn get_collider(&self) -> Rect {
+        self.collider
+    }
 }
 
 impl Entity for Ground {

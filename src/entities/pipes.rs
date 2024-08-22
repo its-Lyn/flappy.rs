@@ -6,7 +6,7 @@ use super::entity::Entity;
 const SPAWN_OFFSET: f32 = 20.0;
 const SPEED: f32 = 2.0;
 
-const PIPE_GAP: f32 = 90.0;
+const PIPE_GAP: f32 = 80.0;
 const PIPE_MIN_OFFSET: f32 = 180.0;
 const PIPE_MAX_OFFSET: f32 = 120.0;
 
@@ -25,6 +25,7 @@ pub struct Pipes {
     score_collider: Rect,
 
     pub touched: bool,
+    pub touched_death: bool,
 }
 
 impl Pipes {
@@ -41,6 +42,7 @@ impl Pipes {
             score_collider: Rect::new(0.0, 0.0, 0.0, 0.0),
 
             touched: false,
+            touched_death: false,
         }
     }
 

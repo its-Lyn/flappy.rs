@@ -22,11 +22,16 @@ pub struct Game {
     pipe_timer: f32,
     pipe: Pipes,
 
+    death_sound: Sound,
+    death_fall_sound: Sound,
+
+    playing: bool,
+    falling: bool,
+
     start_texture: Texture2D,
     started: bool,
-    alpha: f32,
-
-    done: bool
+    start_alpha: f32,
+    done: bool,
 }
 
 impl Game {
@@ -59,10 +64,16 @@ impl Game {
             pipe_timer: 0.0,
             pipe: Pipes::new().await,
 
+            death_sound: paths::get_audio("hit.wav").await.unwrap(),
+            death_fall_sound: paths::get_audio("die.wav").await.unwrap(),
+            
+            playing: true,
+            falling: false,
+
             start_texture: paths::get_asset("message.png").await.unwrap(),
             started: false,
-            alpha: 0.0,
-            done: false
+            start_alpha: 0.0,
+            done: false,
         }
     }
 
@@ -85,19 +96,42 @@ impl State for Game {
     fn update(&mut self) {
         if !self.started && input::is_mouse_button_pressed(MouseButton::Left) {
             self.started = true;
+            self.playing = false;
         }
 
-        self.bird.update(!self.started);
-        self.ground.update(!self.started);
+        if !self.playing && collisions::rect_collision(&self.bird.get_collider(), &self.ground.get_collider()) {
+            self.playing = true;
+            self.bird.hard_pause = true;
 
+            audio::play_sound_once(&self.death_sound);
+        }
+
+        self.bird.update(self.playing);
+        self.ground.update(self.playing);
+
+        if self.falling {
+            self.bird.die();
+
+            if collisions::rect_collision(&self.bird.get_collider(), &self.ground.get_collider()) {
+                self.falling = false;
+            }
+        }
+ 
         let pipes = &mut self.pipes;
         pipes.retain_mut(|pipe| {
-            pipe.update(!self.started);
+            pipe.update(self.playing);
 
             // Death check
-            if collisions::rect_collision(&self.bird.get_collider(), &pipe.get_colliders().0) 
-            || collisions::rect_collision(&self.bird.get_collider(), &pipe.get_colliders().1) {
-                // TODO: Die
+            if (collisions::rect_collision(&self.bird.get_collider(), &pipe.get_colliders().0) 
+            || collisions::rect_collision(&self.bird.get_collider(), &pipe.get_colliders().1))
+            && !pipe.touched_death {
+                self.playing = true;
+                self.falling = true;
+
+                audio::play_sound_once(&self.death_sound);
+                audio::play_sound_once(&self.death_fall_sound);
+
+                pipe.touched_death = true;
             }
 
             // Score check
@@ -136,12 +170,12 @@ impl State for Game {
         }
 
         if !self.started {
-            if self.alpha <= 1.0 { self.alpha += 0.1; }
+            if self.start_alpha <= 1.0 { self.start_alpha += 0.1; }
             return;
         }
 
-        if self.alpha >= 0.0 { self.alpha -= 0.1; }
-        if self.alpha >= 1.0 { self.done = true; }
+        if self.start_alpha >= 0.0 { self.start_alpha -= 0.1; }
+        if self.start_alpha >= 1.0 { self.done = true; }
     }
 
     fn draw(&self) {
@@ -153,11 +187,11 @@ impl State for Game {
         self.ground.draw();
 
         if !self.done {
-            draw_texture(&self.start_texture, 50., 40., Color { a: self.alpha, ..WHITE });
+            draw_texture(&self.start_texture, 50., 40., Color { a: self.start_alpha, ..WHITE });
         }
 
         // Draw score
-        if self.score == 0 {
+        if self.score == 0 || self.playing {
             return;
         }
 
